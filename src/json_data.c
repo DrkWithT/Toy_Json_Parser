@@ -58,6 +58,16 @@ void ArrayItem_Destroy(ArrayItem *self)
         free(self->data.str);
         self->data.str = NULL;
     }
+    else if (self->type == ARR && self->data.arr != NULL)
+    {
+        Array_Destroy(self->data.arr);
+        self->data.arr = NULL;
+    }
+    else if (self->type == OBJ && self->data.obj != NULL)
+    {
+        Object_Destroy(self->data.obj);
+        self->data.obj = NULL;
+    }
 }
 
 /// Array:
@@ -258,6 +268,20 @@ Property *Property_Array(char *name, Array *value)
     return result;
 }
 
+Property *Property_Object(char *name, Object *value)
+{
+    Property *result = malloc(sizeof(Property));
+
+    if (!result)
+        return result;
+    
+    result->name = name;
+    result->data.obj = value;
+    result->type = OBJ;
+
+    return result;
+}
+
 void Property_Destroy(Property *self)
 {
     // check type for whether there is dynamic memory to free
@@ -274,7 +298,20 @@ void Property_Destroy(Property *self)
         }
         break;
     case ARR:
-        Array_Destroy(self->data.arr);
+        if (self->data.arr != NULL)
+        {
+            Array_Destroy(self->data.arr);
+            free(self->data.arr);
+            self->data.arr = NULL;
+        }
+        break;
+    case OBJ:
+        if (self->data.obj != NULL)
+        {
+            Object_Destroy(self->data.obj);
+            free(self->data.obj);
+            self->data.obj = NULL;
+        }
         break;
     default:
         break;
@@ -295,3 +332,5 @@ float Property_AsFloat(const Property *self) { return self->data.f; }
 const char *Property_AsStr(const Property *self) { return self->data.str; }
 
 const Array *Property_AsArr(const Property *self) { return self->data.arr; }
+
+const Object *Property_AsObj(const Property *self) { return self->data.obj; }
