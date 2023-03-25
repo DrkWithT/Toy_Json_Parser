@@ -1,9 +1,6 @@
 #ifndef JSON_PROPERTY_H
 #define JSON_PROPERTY_H
 
-#include "json_array.h"
-#include "json_object.h"
-
 typedef struct json_property
 {
     /* data */
@@ -22,8 +19,7 @@ typedef struct json_property
 Property *Property_Int(char *name, int value);
 Property *Property_Float(char *name, float value);
 Property *Property_String(char *name, char *value);
-Property *Property_Array(char *name, Array *value);
-Property *Property_Object(char *name, Object *value);
+Property *Property_Chunk(char *name, void *value, DataType type);
 void Property_Destroy(Property *self);
 int Property_AsInt(const Property *self);
 float Property_AsFloat(const Property *self);

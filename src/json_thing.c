@@ -24,13 +24,13 @@ JsonThing *JsonThing_Create(const char* file_name, DataType root_type, size_t op
         Array *temp_arr = Array_Create();
 
         if (temp_arr != NULL)
-            new_root = Property_Array(NULL, temp_arr);
+            new_root = Property_Chunk(NULL, temp_arr, ARR);
         break;
     case OBJ:
         Object *temp_obj = Object_Create(opt_prop_count);
 
         if (temp_obj != NULL)
-            new_root = Property_Object(NULL, temp_obj);
+            new_root = Property_Object(NULL, temp_obj, OBJ);
         break;
     default:
         break;

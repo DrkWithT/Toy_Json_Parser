@@ -254,7 +254,7 @@ Property *Property_String(char *name, char *value)
     return result;
 }
 
-Property *Property_Array(char *name, Array *value)
+Property *Property_Chunk(char *name, void *value, DataType type)
 {
     Property *result = malloc(sizeof(Property));
 
@@ -263,21 +263,7 @@ Property *Property_Array(char *name, Array *value)
     
     result->name = name;
     result->data.chunk = value;
-    result->type = ARR;
-
-    return result;
-}
-
-Property *Property_Object(char *name, Object *value)
-{
-    Property *result = malloc(sizeof(Property));
-
-    if (!result)
-        return result;
-    
-    result->name = name;
-    result->data.chunk = value;
-    result->type = OBJ;
+    result->type = type;
 
     return result;
 }
