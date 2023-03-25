@@ -58,15 +58,15 @@ void ArrayItem_Destroy(ArrayItem *self)
         free(self->data.str);
         self->data.str = NULL;
     }
-    else if (self->type == ARR && self->data.arr != NULL)
+    else if (self->type == ARR && self->data.chunk != NULL)
     {
-        Array_Destroy(self->data.arr);
-        self->data.arr = NULL;
+        Array_Destroy((Array*)self->data.chunk);
+        self->data.chunk = NULL;
     }
-    else if (self->type == OBJ && self->data.obj != NULL)
+    else if (self->type == OBJ && self->data.chunk != NULL)
     {
-        Object_Destroy(self->data.obj);
-        self->data.obj = NULL;
+        Object_Destroy((Object*)self->data.chunk);
+        self->data.chunk = NULL;
     }
 }
 
@@ -185,7 +185,7 @@ void Object_Destroy(Object *self)
         if (!self->buckets[curr])
             continue;
         
-        Property_Destroy(self->buckets[curr]);
+        Property_Destroy((Property*)self->buckets[curr]);
         free(self->buckets[curr]);
         self->buckets[curr] = NULL;
     }
@@ -208,7 +208,7 @@ const Property *Object_GetItem(Object *self, const char *key)
 {
     size_t bucket = hash_object_key(key) % self->bucket_count;
 
-    return self->buckets[bucket];
+    return (Property*)self->buckets[bucket];
 }
 
 /// Property:
@@ -262,7 +262,7 @@ Property *Property_Array(char *name, Array *value)
         return result;
     
     result->name = name;
-    result->data.arr = value;
+    result->data.chunk = value;
     result->type = ARR;
 
     return result;
@@ -276,7 +276,7 @@ Property *Property_Object(char *name, Object *value)
         return result;
     
     result->name = name;
-    result->data.obj = value;
+    result->data.chunk = value;
     result->type = OBJ;
 
     return result;
@@ -298,19 +298,19 @@ void Property_Destroy(Property *self)
         }
         break;
     case ARR:
-        if (self->data.arr != NULL)
+        if (self->data.chunk != NULL)
         {
-            Array_Destroy(self->data.arr);
-            free(self->data.arr);
-            self->data.arr = NULL;
+            Array_Destroy((Array*)self->data.chunk);
+            free(self->data.chunk);
+            self->data.chunk = NULL;
         }
         break;
     case OBJ:
-        if (self->data.obj != NULL)
+        if (self->data.chunk != NULL)
         {
-            Object_Destroy(self->data.obj);
-            free(self->data.obj);
-            self->data.obj = NULL;
+            Object_Destroy((Object*)self->data.chunk);
+            free(self->data.chunk);
+            self->data.chunk = NULL;
         }
         break;
     default:
@@ -331,6 +331,9 @@ float Property_AsFloat(const Property *self) { return self->data.f; }
 
 const char *Property_AsStr(const Property *self) { return self->data.str; }
 
-const Array *Property_AsArr(const Property *self) { return self->data.arr; }
+const void *Property_AsChunk(const Property *self, DataType *type_flag)
+{
+    *type_flag = self->type;
 
-const Object *Property_AsObj(const Property *self) { return self->data.obj; }
+    return self->data.chunk; // non-primitive typed data!
+}
