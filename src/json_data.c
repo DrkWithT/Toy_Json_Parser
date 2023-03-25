@@ -137,6 +137,70 @@ void Array_Push(Array *self, ArrayItem *item)
     self->length++;
 }
 
+/// Object:
+
+Object *Object_Create(size_t slots)
+{
+    Object *result = malloc(sizeof(Object));
+
+    if (!result)
+        return result;
+
+    // allocate bucket array with max load 0.5 (no collisions I guess... YOLO!)
+    size_t bucket_slots = slots << 1;
+    result->buckets = malloc(sizeof(Property*) * bucket_slots);
+    
+    if (result->buckets != NULL)
+    {
+        for (size_t i = 0; i < bucket_slots; i++)
+            result->buckets[i] = NULL;
+        
+        result->bucket_count = bucket_slots;
+    }
+    else
+        result->bucket_count = 0; // invalidate hash table on failed allocation
+
+    return result;
+}
+
+void Object_Destroy(Object *self)
+{
+    if (!self->buckets)
+        return;
+    
+    size_t bucket_count = self->bucket_count;
+
+    for (size_t curr = 0; curr < bucket_count; curr++)
+    {
+        if (!self->buckets[curr])
+            continue;
+        
+        Property_Destroy(self->buckets[curr]);
+        free(self->buckets[curr]);
+        self->buckets[curr] = NULL;
+    }
+    
+    free(self->buckets);
+    self->buckets = NULL;
+}
+
+void Object_SetItem(Object *self, const char *key, Property *prop_val)
+{
+    size_t bucket = hash_object_key(key) % self->bucket_count;
+
+    if (!self->buckets[bucket])
+    {
+        self->buckets[bucket] = prop_val;
+    }
+}
+
+const Property *Object_GetItem(Object *self, const char *key)
+{
+    size_t bucket = hash_object_key(key) % self->bucket_count;
+
+    return self->buckets[bucket];
+}
+
 /// Property:
 Property *Property_Int(char *name, int value)
 {

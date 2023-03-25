@@ -1,5 +1,5 @@
-#ifndef JSON_LIST_H
-#define JSON_LIST_H
+#ifndef JSON_DATA_H
+#define JSON_DATA_H
 
 /**
  * @file json_data.h
@@ -11,6 +11,7 @@
  */
 
 #include <stdlib.h>
+#include "json_hasher.h"
 
 /// Enums:
 
@@ -31,6 +32,7 @@ typedef union json_value
     float f;
     char *str;
     Array *arr;
+    Object *obj;
 } Value;
 
 typedef struct json_array_item
@@ -71,6 +73,24 @@ void Array_Destroy(Array *self);
 size_t Array_Length(const Array *self);
 const ArrayItem *Array_Get(const Array *self, size_t pos);
 void Array_Push(Array *self, ArrayItem *item);
+
+typedef struct json_obj
+{
+    /* data */
+    size_t bucket_count;
+    Property **buckets;
+} Object;
+
+/**
+ * @brief Creates and initializes a hashtable-based key-value object with load factor 0.5.
+ * 
+ * @param slots Count of actual items (half the bucket count).
+ * @return Object*
+ */
+Object *Object_Create(size_t slots);
+void Object_Destroy(Object *self);
+void Object_SetItem(Object *self, const char *key, Property *prop_val);
+const Property *Object_GetItem(Object *self, const char *key);
 
 typedef struct json_property
 {
