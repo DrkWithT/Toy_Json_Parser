@@ -7,30 +7,30 @@
 
 #include "json_thing.h"
 
-JsonThing *JsonThing_Create(const char* file_name, DataType root_type, size_t opt_prop_count)
+JsonThing *JsonThing_Create(DataType root_type, size_t opt_prop_count)
 {
     JsonThing *result = malloc(sizeof(JsonThing));
     
     if (!result)
         return result;
     
-    result->file_name = file_name;
-    
     Property *new_root = NULL; 
+    Array *temp_arr = NULL;
+    Object *temp_obj = NULL;
 
     switch (root_type)
     {
     case ARR:
-        Array *temp_arr = Array_Create();
+        temp_arr = Array_Create();
 
         if (temp_arr != NULL)
             new_root = Property_Chunk(NULL, temp_arr, ARR);
         break;
     case OBJ:
-        Object *temp_obj = Object_Create(opt_prop_count);
+        temp_obj = Object_Create(opt_prop_count);
 
         if (temp_obj != NULL)
-            new_root = Property_Object(NULL, temp_obj, OBJ);
+            new_root = Property_Chunk(NULL, temp_obj, OBJ);
         break;
     default:
         break;
@@ -51,10 +51,10 @@ void JsonThing_Destroy(JsonThing *self)
     switch (root_type)
     {
     case ARR:
-        Array_Destroy(self->root);
+        Array_Destroy((Array*)self->root->data.chunk);
         break;
     case OBJ:
-        Object_Destroy(self->root);
+        Object_Destroy((Object*)self->root->data.chunk);
         break;
     default:
         // NOTE: primitives cannot be the root!

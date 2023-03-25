@@ -11,14 +11,16 @@
 int main(void)
 {
     // Test pure JSON Array:    
-    JsonThing *array_thing = JsonThing_Create("nums", ARR, 4); // The last arg is extra for the array case: I pass it anyways!
+    JsonThing *array_thing = JsonThing_Create(ARR, 4); // The last arg is extra for the array case: I pass it anyways!
     Array *array_ref = (Array*)array_thing->root->data.chunk;
 
+    // Test Array append function:
     Array_Push(array_ref, ArrayItem_Int(1));
     Array_Push(array_ref, ArrayItem_Int(2));
     Array_Push(array_ref, ArrayItem_Int(4));
     Array_Push(array_ref, ArrayItem_Int(8));
 
+    // Test Array length function:
     size_t item_count = Array_Length(array_ref);
 
     // Test 1: length should be 4!
@@ -29,7 +31,7 @@ int main(void)
 
     for (size_t i = 0; i < item_count; i++)
     {
-        printf("%zu ", Array_Get(array_ref, i)->data.i);
+        printf("%i ", Array_Get(array_ref, i)->data.i);
     }
 
     printf("\n");
@@ -40,7 +42,7 @@ int main(void)
     array_thing = NULL;
 
     // Test pure JSON Object:
-    // todo
+    // TODO: I should initialize a simple nested object, print the nested property, and try destroying it safely.
 
     return 0;
 }

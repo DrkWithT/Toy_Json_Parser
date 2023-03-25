@@ -118,10 +118,14 @@ const ArrayItem *Array_Get(const Array *self, size_t pos)
     
     ArrayItem *trackPtr = self->head;
 
-    do {
+    while (countdown > 0)
+    {
         trackPtr = trackPtr->next;
         countdown--;
-    } while (trackPtr->next != NULL && countdown != 0);
+
+        if (!trackPtr)
+            break;
+    }
 
     return trackPtr;
 }
