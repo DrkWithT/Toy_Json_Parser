@@ -1,0 +1,11 @@
+{
+    "name": "Jane Doe",
+    "age": 21,
+    "year": 3,
+    "gpa": 3.25,
+    "major": "ENGL",
+    "clubs": [
+        "UniWriters",
+        "FanficHaven"
+    ]
+}
