@@ -1,4 +1,4 @@
-# Makefile for Project
+# Makefile for Toy Json Parser proj:
 # By: Derek Tan
 
 # Compiler:

@@ -29,7 +29,7 @@ int main(void)
 
     for (size_t i = 0; i < item_count; i++)
     {
-        printf("%zu ", Array_Get(array_ref, i));
+        printf("%zu ", Array_Get(array_ref, i)->data.i);
     }
 
     printf("\n");
