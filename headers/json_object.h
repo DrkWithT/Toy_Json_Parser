@@ -7,7 +7,7 @@ typedef struct json_obj
 {
     /* data */
     size_t bucket_count;
-    Property **buckets;
+    void **buckets;
 } Object;
 
 /**

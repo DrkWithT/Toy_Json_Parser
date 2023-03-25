@@ -2,7 +2,6 @@
 #define JSON_ARRAY_H
 
 #include "json_types.h"
-#include "json_object.h"
 
 typedef struct json_array_item
 {
@@ -14,11 +13,10 @@ typedef struct json_array_item
         int i;
         float f;
         char *str;
-        Array *arr;
-        Object *obj;
+        void *chunk; // non-primitive (Array or Object)
     } data;
 
-    ArrayItem *next;
+    struct json_array_item *next;
 } ArrayItem;
 
 ArrayItem *ArrayItem_Int(int value);
