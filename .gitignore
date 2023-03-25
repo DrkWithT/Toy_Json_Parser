@@ -1,0 +1,6 @@
+# gitignore
+# Derek Tan
+
+# Ignore binaries and their directory bin/:
+*.o
+bin
