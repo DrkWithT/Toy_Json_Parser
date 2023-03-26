@@ -16,6 +16,6 @@ This repository contains code for a homemade recursive JSON parser in C11. Becau
 
 ### To Do:
  1. Implement JSON data structures! (DONE, needs TESTING)
- 2. Implement Lexer.
- 3. Implement iterative token parser. (Maybe use a stack for tracking nested levels and names.)
- 4. Test run parse result with property tests.
+ 2. Implement Lexer. (WIP... TEST)
+ 3. Implement iterative token parser. (Must use a stack for tracking nested levels and names.)
+ 4. Test run parse result and do structure function tests.
