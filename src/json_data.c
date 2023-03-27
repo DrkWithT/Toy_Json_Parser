@@ -51,6 +51,29 @@ ArrayItem *ArrayItem_String(char *str)
     return result;
 }
 
+ArrayItem *ArrayItem_Chunk(void *chunk, DataType type)
+{
+    ArrayItem *result = malloc(sizeof(ArrayItem));
+
+    if (!result)
+        return result;
+
+    if (type == ARR || type == OBJ)
+    {
+        result->data.chunk = chunk;
+        result->type = type;
+        result->next = NULL;
+    }
+    else
+    {
+        result->data.chunk = NULL;
+        result->type = NUL;
+        result->next = NULL;
+    }
+
+    return result;
+}
+
 void ArrayItem_Destroy(ArrayItem *self)
 {
     if (self->type == STR && self->data.str != NULL)
