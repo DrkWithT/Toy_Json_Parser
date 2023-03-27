@@ -116,19 +116,19 @@ void TokenVec_Grow(TokenVec *self)
 
 void TokenVec_Set(TokenVec *self, size_t idx, Token *item)
 {
-    // only set an empty slot and update length if ok!
-    if (self->data + idx == NULL)
+    // only set an empty slot and update length if ok
+    if (!self->data[idx])
     {
         self->data[idx] = item;
         self->count++;
     }
 
-    // also reallocate this vector when the old slots are full...
+    // also reallocate this vector when old slots are full
     if (self->count == self->capacity)
         TokenVec_Grow(self);
 }
 
 const Token *TokenVec_At(TokenVec *self, size_t idx)
 {
-    return self->data + idx;
+    return self->data[idx];
 }
