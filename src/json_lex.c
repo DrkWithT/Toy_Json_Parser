@@ -7,6 +7,10 @@
 
 #include "json_lex.h"
 
+int is_wspace(char c) { return c == ' ' || c == '\t' || c == '\n' || c =='\r'; }
+int is_digit(char c) { return c >= '0' && c <= '9'; }
+int match_punct(char c, char ch) { return c == ch; }
+
 char *read_file(const char *file_path, size_t *external_len)
 {
     FILE *fs = fopen(file_path, "r");
@@ -79,6 +83,14 @@ char *Lexer_CleanUp(Lexer *self)
     return temp;
 }
 
+int Lexer_CanUse(const Lexer *self)
+{
+    if (self == NULL)
+        return 0;
+
+    return self->doc_buf != NULL;
+}
+
 void Lexer_Skip_WSpc(Lexer *self)
 {
     char c = '\0';
@@ -104,10 +116,12 @@ Token *Lexer_Lex_Punct(Lexer *self, TokenType punct_kind)
 
 Token *Lexer_Lex_Str(Lexer *self)
 {
+    self->doc_pos++;
+
     size_t curr_start = self->doc_pos;
     size_t curr_span = 0;
     char c = '\0';
-
+    
     do
     {
         c = self->doc_buf[self->doc_pos];
@@ -212,19 +226,19 @@ TokenVec *Lexer_Lex_All(Lexer *self)
         if (self->doc_pos >= self->doc_end)
         {
             temp = Token_Create(FILE_END, self->doc_pos, 1);
-            break;   
+            break;
         }
 
         peeked_char = self->doc_buf[self->doc_pos];
 
+        if (is_wspace(peeked_char))
+        {
+            Lexer_Skip_WSpc(self);
+            continue;
+        }
+
         switch (peeked_char)
         {
-        case ' ':
-        case '\t':
-        case '\n':
-        case '\r':
-            Lexer_Skip_WSpc(self);
-            break;
         case '[':
             temp = Lexer_Lex_Punct(self, LBRACKET);
             break;
@@ -238,7 +252,6 @@ TokenVec *Lexer_Lex_All(Lexer *self)
             temp = Lexer_Lex_Punct(self, RCURLY);
             break;
         case '\"':
-            self->doc_pos++;
             temp = Lexer_Lex_Str(self);
             break;
         case ':':
@@ -259,6 +272,8 @@ TokenVec *Lexer_Lex_All(Lexer *self)
 
         // append new token in order!
         TokenVec_Set(result, result_idx, temp);
+
+        result_idx++;
     }
     
     return result;

@@ -8,9 +8,9 @@
 
 /// Helpers:
 
-inline int is_wspace(char c) { return c == ' ' || c == '\t' || c == '\n' || c =='\r'; }
-inline int is_digit(char c) { return c >= '0' && c <= '9'; }
-inline int match_punct(char c, char ch) { return c == ch; }
+int is_wspace(char c);
+int is_digit(char c);
+int match_punct(char c, char ch);
 
 /**
  * @brief Reads an entire file (json) into a dynamic char buffer. Returns NULL on failure. Either failed allocation or a size too large (over MAX_JSON_LEN) will cause failure.
@@ -45,6 +45,7 @@ Lexer *Lexer_Create(const char *file_path);
  */
 char* Lexer_CleanUp(Lexer *self);
 
+int Lexer_CanUse(const Lexer *self);
 void Lexer_Skip_WSpc(Lexer *self);
 Token *Lexer_Lex_Punct(Lexer *self, TokenType punct_kind);
 Token *Lexer_Lex_Str(Lexer *self);
