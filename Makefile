@@ -18,11 +18,12 @@ EXE := $(BIN_DIR)/myjson
 # Directives
 vpath %.c $(SRC_DIR)
 
-.PHONY: all list clean
+.PHONY: all listobjs clean
 
 # for testing purposes!
-list:
-	echo $(OBJS)
+listobjs:
+	@echo "Object targets:"
+	@echo $(OBJS)
 
 all: $(EXE)
 
