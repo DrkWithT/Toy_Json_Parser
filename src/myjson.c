@@ -5,84 +5,74 @@
  * @date 2023-03-25
  */
 
-#include "json_thing.h"
+// #include "json_thing.h" // uncomment after parser is done
+#include "json_lex.h"
 #include <stdio.h>
 
-int main(void)
+// Token typenames:
+static const char TOKEN_TYPENAMES[13][8] = {
+    "WTSPACE",
+    "L_BRACK",
+    "R_BRACK",
+    "L_CURLY",
+    "R_CURLY",
+    "STRBODY",
+    "COLON_P",
+    "INT_LTL",
+    "FLT_LTL",
+    "NLL_LTL",
+    "COMMA_P",
+    "EOF_TOK",
+    "UNKNOWN"
+};
+
+/// Debug Helpers
+
+void Print_Token(size_t t_num, const Token *t)
 {
-    // Test numeric JSON Array:
-    JsonThing *array1 = JsonThing_Create(ARR, 4); // The last arg is extra for the array case: I pass it anyways!
-    Array *array_ref = (Array*)array1->root->data.chunk;
+    if (t != NULL)
+        printf("Token %zu: type=%s, begin=%zu, span=%zu\n", t_num, TOKEN_TYPENAMES[t->type], t->begin, t->span);
+    else
+        printf("NULL\n");
+}
 
-    // Test Array append function:
-    Array_Push(array_ref, ArrayItem_Int(1));
-    Array_Push(array_ref, ArrayItem_Int(2));
-    Array_Push(array_ref, ArrayItem_Int(4));
-    Array_Push(array_ref, ArrayItem_Int(8));
-
-    // Test Array length function:
-    size_t item_count = Array_Length(array_ref);
-
-    // Test length (4)!
-    printf("nums.length = %zu\n", item_count);
-
-    // Test output should be "1 2 4 8".
-    printf("nums: ");
-
-    for (size_t i = 0; i < item_count; i++)
+int main(int argc, char *argv[])
+{
+    if (argc != 2)
     {
-        printf("%i ", Array_Get(array_ref, i)->data.i);
+        printf("usage: ./myjson <file name>\n");
+        return 1;
     }
 
-    printf("\n");
-    
-    // Test destroy simple Array
-    JsonThing_Destroy(array1);
-    free(array1);
-    array1 = NULL;
+    // try to create lexer successfully:
+    Lexer *lexer_ref = Lexer_Create(argv[1]);
 
-    // Test native JSON Object
+    if (!lexer_ref)
+    {
+        printf("Failed to create Lexer!\n");
+        return 1;
+    }
 
-    char *propname_1 = malloc(sizeof(char) * 6); // first name
-    strcpy(propname_1, "first");
+    // test Lexer!
+    TokenVec *tokens = Lexer_Lex_All(lexer_ref);
 
-    char *first_name = malloc(sizeof(char) * 4);
-    strcpy(first_name, "Bob");
+    size_t slot_count = tokens->capacity;
 
-    char *propname_2 = malloc(sizeof(char) * 5); // last name
-    strcpy(propname_2, "last");
+    // show token data:
+    for (size_t i = 0; i < slot_count; i++)
+        Print_Token(i, TokenVec_At(tokens, i));
 
-    char *last_name = malloc(sizeof(char) * 4);
-    strcpy(last_name, "Cox");
+    // free all dynamic memory:
+    TokenVec_Destroy(tokens);
+    free(tokens);
+    tokens = NULL;
 
-    char *propname_3 = malloc(sizeof(char) * 3); // xy coords
-    strcpy(propname_3, "xy");
+    char *old_buf_ref = Lexer_CleanUp(lexer_ref);
+    free(old_buf_ref);
+    old_buf_ref = NULL;
 
-    Array *coords = Array_Create();
-    Array_Push(coords, ArrayItem_Int(69));
-    Array_Push(coords, ArrayItem_Int(69));
-
-    JsonThing *object1 = JsonThing_Create(OBJ, 3); // person & coord data 
-
-    Object *object_ref = (Object*)object1->root->data.chunk;
-
-    Object_SetItem(object_ref, propname_1, Property_String(propname_1, first_name));
-    Object_SetItem(object_ref, propname_2, Property_String(propname_2, last_name));
-    Object_SetItem(object_ref, propname_3, Property_Chunk(propname_3, coords, ARR));
-
-    // Test Object_GetItem:
-    const Property *xy_coords = Object_GetItem(object_ref, propname_3);
-
-    const Array *xyarr_ref = (Array*)xy_coords->data.chunk;
-
-    printf("person.coords = [%i, %i]\n",
-        Array_Get(xyarr_ref, 0)->data.i,
-        Array_Get(xyarr_ref, 1)->data.i
-    );
-
-    JsonThing_Destroy(object1);
-    free(object1);
-    object1 = NULL;
+    free(lexer_ref);
+    lexer_ref = NULL;
 
     return 0;
 }
