@@ -12,7 +12,8 @@ typedef enum json_type {
     FLO,
     STR,
     ARR,
-    OBJ
+    OBJ,
+    NUL
 } DataType;
 
 #endif

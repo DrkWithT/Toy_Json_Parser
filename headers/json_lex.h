@@ -43,9 +43,16 @@ Lexer *Lexer_Create(const char *file_path);
  * 
  * @param self
  */
-char* Lexer_CleanUp(Lexer *self);
+char *Lexer_CleanUp(Lexer *self);
 
+/**
+ * @brief Checks if the lexer can lex. Requires the Lexer to be non-NULL and the buffer to be allocated.
+ * 
+ * @param self
+ * @return int
+ */
 int Lexer_CanUse(const Lexer *self);
+
 void Lexer_Skip_WSpc(Lexer *self);
 Token *Lexer_Lex_Punct(Lexer *self, TokenType punct_kind);
 Token *Lexer_Lex_Str(Lexer *self);
