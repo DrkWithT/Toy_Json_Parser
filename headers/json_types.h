@@ -9,7 +9,7 @@
 
 typedef enum json_type {
     INT,
-    FLO,
+    FLT,
     STR,
     ARR,
     OBJ,

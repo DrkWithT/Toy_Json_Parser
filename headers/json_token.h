@@ -7,7 +7,6 @@
 /// Enums:
 
 typedef enum token_type {
-    WSPACE,       // space, tab, newline, return
     LBRACKET,
     RBRACKET,
     LCURLY,

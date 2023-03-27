@@ -30,7 +30,7 @@ ArrayItem *ArrayItem_Float(float value)
     if (!result)
         return result;
     
-    result->type = FLO;
+    result->type = FLT;
     result->data.f = value;
     result->next = NULL;
 
@@ -262,7 +262,7 @@ Property *Property_Float(char *name, float value)
     
     result->name = name;
     result->data.f = value;
-    result->type = FLO;
+    result->type = FLT;
 
     return result;
 }
@@ -301,7 +301,7 @@ void Property_Destroy(Property *self)
     switch (self->type)
     {
     case INT:
-    case FLO:
+    case FLT:
         break;
     case STR:
         if (self->data.str != NULL)
