@@ -13,7 +13,8 @@ typedef enum json_type {
     STR,
     ARR,
     OBJ,
-    NUL
+    NUL,
+    UNSUPPORTED
 } DataType;
 
 /// Specifies relation of a primitive value to something: may be to none, to property, to array.
