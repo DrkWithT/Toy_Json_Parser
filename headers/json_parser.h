@@ -35,7 +35,6 @@ Parser *Parser_Create(char *src, TokenVec *tokens);
 void Parser_Reset(Parser *self);
 int Parser_IsReady(const Parser *self);
 int Parser_AtEnd(const Parser *self);
-Token *Parser_Peek_Token(Parser *self, size_t post_offset);
 
 /**
  * @brief Parses a non-property primitive value. This covers standalone primitives or array items.
