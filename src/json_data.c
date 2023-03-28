@@ -111,20 +111,21 @@ Array *Array_Create()
 void Array_Destroy(Array *self)
 {
     size_t arr_length = self->length;
-    ArrayItem *targetPtr = self->head;
+    ArrayItem *target = self->head;
+    ArrayItem *next = NULL;
 
-    if (arr_length < 1)
+    if (arr_length < 1 || !target)
         return;
 
-    while (self->head != NULL)
+    do
     {
-        targetPtr = targetPtr->next;
+        next = target->next;
 
-        ArrayItem_Destroy(self->head);
-        free(self->head);
-        
-        self->head = targetPtr;
-    }
+        ArrayItem_Destroy(target);
+        free(target);
+
+        target = next;
+    } while (target != NULL);
     
     self->head = NULL;
     self->length = 0;
@@ -143,11 +144,14 @@ const ArrayItem *Array_Get(const Array *self, size_t pos)
 
     while (countdown > 0)
     {
+        if (!trackPtr->next)
+        {
+            trackPtr = NULL;
+            break;
+        }
+
         trackPtr = trackPtr->next;
         countdown--;
-
-        if (!trackPtr)
-            break;
     }
 
     return trackPtr;
@@ -170,6 +174,9 @@ void Array_Push(Array *self, ArrayItem *item)
         trackPtr = trackPtr->next;
     }
 
+    if (trackPtr == item) // do duplicate check... no repeats since the base case cannot have node N and node N+1 equal and so on
+        return;
+    
     trackPtr->next = item;
     self->length++;
 }
@@ -183,8 +190,8 @@ Object *Object_Create(size_t slots)
     if (!result)
         return result;
 
-    // allocate bucket array with max load 0.5 (no collisions I guess... YOLO!)
-    size_t bucket_slots = slots << 1;
+    // allocate bucket array with max load 0.40 (no collisions I guess... YOLO!)
+    size_t bucket_slots = (slots << 1) + slots;
     result->buckets = malloc(sizeof(Property*) * bucket_slots);
     
     if (result->buckets != NULL)
@@ -226,9 +233,7 @@ void Object_SetItem(Object *self, const char *key, Property *prop_val)
     size_t bucket = hash_object_key(key) % self->bucket_count;
 
     if (!self->buckets[bucket])
-    {
         self->buckets[bucket] = prop_val;
-    }
 }
 
 const Property *Object_GetItem(Object *self, const char *key)

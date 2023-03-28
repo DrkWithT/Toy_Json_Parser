@@ -36,6 +36,7 @@ void JsonThing_Destroy(JsonThing *self)
         break;
     case STR:
         Property_Destroy(self->root);
+        break;
     default:
         // NOTE: numeric primitives are statically allocated, so no freeing here.
         break;
@@ -46,4 +47,6 @@ void JsonThing_Destroy(JsonThing *self)
         free(self->root);
         self->root = NULL;
     }
+
+    puts("JsonThing_Destroy: Freed root."); // DEBUG
 }
