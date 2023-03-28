@@ -128,7 +128,7 @@ void TokenVec_Set(TokenVec *self, size_t idx, Token *item)
         TokenVec_Grow(self);
 }
 
-const Token *TokenVec_At(TokenVec *self, size_t idx)
+Token *TokenVec_At(TokenVec *self, size_t idx)
 {
     return self->data[idx];
 }
