@@ -17,6 +17,6 @@ This repository contains code for a homemade recursive JSON parser in C. Because
 
 ### To Do:
  1. Implement JSON data structures! (DONE, needs TESTING)
- 2. Implement Lexer. (WIP... TEST)
- 3. Implement iterative token parser. (Must use a stack for tracking nested levels and names.)
+ 2. Implement Lexer. (DONE)
+ 3. Implement recursive token parser. (WIP)
  4. Test run parse result and do structure function tests.
