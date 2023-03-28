@@ -7,7 +7,6 @@
 /// Enums:
 
 typedef enum token_type {
-    WSPACE,       // space, tab, newline, return
     LBRACKET,
     RBRACKET,
     LCURLY,
@@ -45,6 +44,6 @@ TokenVec *TokenVec_Create(size_t _capacity);
 void TokenVec_Destroy(TokenVec *self);
 void TokenVec_Grow(TokenVec *self);
 void TokenVec_Set(TokenVec *self, size_t idx, Token *item);
-const Token *TokenVec_At(TokenVec *self, size_t idx);
+Token *TokenVec_At(TokenVec *self, size_t idx);
 
 #endif

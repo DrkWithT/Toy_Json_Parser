@@ -30,6 +30,9 @@ ArrayItem *ArrayItem_Float(float value);
  */
 ArrayItem *ArrayItem_String(char *str);
 
+// TODO: implement this missing function...
+ArrayItem *ArrayItem_Chunk(void *chunk, DataType type);
+
 /**
  * @brief Frees any dynamic memory within an ArrayItem (mostly C-Strings).
  * 
