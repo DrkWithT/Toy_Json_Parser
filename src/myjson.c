@@ -9,21 +9,21 @@
 
 #define TEST_COUNT 3
 
-static const char TOKEN_TYPENAMES[13][8] = {
-    "WTSPACE",
-    "L_BRACK",
-    "R_BRACK",
-    "L_CURLY",
-    "R_CURLY",
-    "STRBODY",
-    "COLON_P",
-    "INT_LTL",
-    "FLT_LTL",
-    "NLL_LTL",
-    "COMMA_P",
-    "EOF_TOK",
-    "UNKNOWN"
-};
+// static const char TOKEN_TYPENAMES[13][8] = {
+//     "WTSPACE",
+//     "L_BRACK",
+//     "R_BRACK",
+//     "L_CURLY",
+//     "R_CURLY",
+//     "STRBODY",
+//     "COLON_P",
+//     "INT_LTL",
+//     "FLT_LTL",
+//     "NLL_LTL",
+//     "COMMA_P",
+//     "EOF_TOK",
+//     "UNKNOWN"
+// };
 
 static const char TEST_FILES[TEST_COUNT][17] = {
     "tests/test1.json",
@@ -47,7 +47,7 @@ void Do_Test1(const JsonThing *json_ds)
     Array *clubs = (Array*)Property_AsChunk(Object_GetItem(obj, "clubs"), &type);
     const ArrayItem *item1 = Array_Get(clubs, 0);
 
-    printf("type %i: json_ds[\"clubs\"][0] = \"%s\"\n", item1->data.str);
+    printf("type %i: json_ds[\"clubs\"][0] = \"%s\"\n", type, item1->data.str);
 }
 
 void Do_Test2(const JsonThing *json_ds)
@@ -74,15 +74,15 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    int test_number = atoi(argv[1]) - 1;
+    int test_index = atoi(argv[1]) - 1;
 
-    if (test_number <= 0 || test_number >= TEST_COUNT)
+    if (test_index < 0 || test_index >= TEST_COUNT)
     {
         printf("Invalid test number.\n");
         return 1;
     }
 
-    Lexer *lexer_ref = Lexer_Create(TEST_FILES[test_number]);
+    Lexer *lexer_ref = Lexer_Create(TEST_FILES[test_index]);
 
     if (!lexer_ref)
     {
@@ -91,7 +91,6 @@ int main(int argc, char *argv[])
     }
 
     TokenVec *tokens = Lexer_Lex_All(lexer_ref);
-    DataType target_type = UNSUPPORTED;
     char *old_buf_ref = Lexer_CleanUp(lexer_ref);
 
     Parser *parser_ref = Parser_Create(old_buf_ref, tokens);
@@ -104,15 +103,15 @@ int main(int argc, char *argv[])
     puts("Testing object property:");
     if (json_result != NULL)
     {
-        switch (test_number)
+        switch (test_index)
         {
-        case 1:
+        case 0:
             Do_Test1(json_result);
             break;
-        case 2:
+        case 1:
             Do_Test2(json_result);
             break;
-        case 3:
+        case 2:
             Do_Test3(json_result);
             break;
         default:
