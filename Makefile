@@ -20,7 +20,7 @@ vpath %.c $(SRC_DIR)
 
 .PHONY: all listobjs clean
 
-# for testing purposes!
+# Rules:
 listobjs:
 	@echo "Object targets:"
 	@echo $(OBJS)
@@ -34,4 +34,4 @@ $(EXE): $(OBJS)
 	$(CC) $(CFLAGS) -c $< -I$(HDR_DIR)
 
 clean:
-	rm -f $(EXE) *.o
+	rm -f $(EXE)
