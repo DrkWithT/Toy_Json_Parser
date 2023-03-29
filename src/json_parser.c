@@ -38,7 +38,7 @@ void Parser_Reset(Parser *self)
 int Parser_IsReady(const Parser *self)
 {
     // NOTE: if we have text, token slices, and some tokens, parsing can go!
-    return self->srcbuf_ref != NULL && self->tokvec_ref != NULL && Parser_AtEnd(self);
+    return self->srcbuf_ref != NULL && self->tokvec_ref != NULL && !Parser_AtEnd(self);
 }
 
 int Parser_AtEnd(const Parser *self)
@@ -127,8 +127,8 @@ void *Parser_Parse_Arr(Parser *self)
     self->tokvec_idx++;  // skip past 1st bracket...
 
     int skip = 0;        // do not push a remaining value to array on commas
-    int needs_comma = 0;    // expect comma
-    int completed = 0;      // if current array is fully parsed
+    int needs_comma = 0;
+    int completed = 0;
     Token *temp_tok_ref = NULL;
     Array *result = Array_Create();
 
@@ -204,7 +204,7 @@ void *Parser_Parse_Arr(Parser *self)
 void *Parser_Parse_Obj(Parser *self)
 {
     puts("Parse {...}");  // DEBUG
-    self->tokvec_idx++;   // skip past 1st left curly brace 
+    self->tokvec_idx++;   // skip past 1st left curly brace
 
     int completed = 0;    // if current object is fully parsed
     int needs_attr = 1;   // expect attr. name
@@ -215,25 +215,22 @@ void *Parser_Parse_Obj(Parser *self)
 
     Token *curr_tok_ref = NULL;
     char *temp_attr_name = NULL;
-    Property *todo_property = NULL;  // current property to build
+    Property *todo_property = NULL;
     Object *result = NULL;
 
-    // count properties by ':' count...
-    size_t obj_buckets = 0;  // count of minimal properties to get!
+    size_t obj_buckets = 0;
     size_t relative_nest_lvl = 0;
     size_t last_tok_pos = self->tokvec_idx;
 
     while (!Parser_AtEnd(self)) {
-        curr_tok_ref = TokenVec_At(self->tokvec_ref, self->tokvec_idx);
+        curr_tok_ref = TokenVec_At(self->tokvec_ref, self->tokvec_idx);  // prescan property count on this level to find out buckets
 
         switch(curr_tok_ref->type)
         {
         case LCURLY:
-        case LBRACKET:
             relative_nest_lvl++;
             break;
         case RCURLY:
-        case RBRACKET:
             relative_nest_lvl--;
         case COLON:
             if (relative_nest_lvl == 0)
@@ -249,7 +246,6 @@ void *Parser_Parse_Obj(Parser *self)
     // backtrack to first token of object
     self->tokvec_idx = last_tok_pos;
 
-    printf("Creating Object(length %zu)\n", obj_buckets);
     result = Object_Create(obj_buckets);
     
     if (!result)
@@ -407,10 +403,7 @@ void *Parser_Parse_Obj(Parser *self)
 
         // bind property to parsing object when it's appropriate!
         if (!skip_put && todo_property != NULL)
-        {
-            printf("attr: \"%s\", type: %i\n", temp_attr_name, todo_property->type); // DEBUG
             Object_SetItem(result, temp_attr_name, todo_property);
-        }
         
         self->tokvec_idx++;
 
@@ -424,6 +417,9 @@ int Parser_Get_ErrCode(const Parser *self) { return self->err_code; }
 
 JsonThing *Parser_Start_Parse(Parser *self)
 {
+    if (!Parser_IsReady(self))
+        return NULL;
+
     Token *temp_token_ref = NULL;
     DataType temp_root_type = UNSUPPORTED;
     JsonThing *result = NULL;
