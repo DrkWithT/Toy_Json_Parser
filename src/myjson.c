@@ -5,46 +5,84 @@
  * @date 2023-03-25
  */
 
-// #include "json_thing.h" // uncomment after parser is done
 #include "json_parser.h"
 
-// Token typenames:
-static const char TOKEN_TYPENAMES[13][8] = {
-    "WTSPACE",
-    "L_BRACK",
-    "R_BRACK",
-    "L_CURLY",
-    "R_CURLY",
-    "STRBODY",
-    "COLON_P",
-    "INT_LTL",
-    "FLT_LTL",
-    "NLL_LTL",
-    "COMMA_P",
-    "EOF_TOK",
-    "UNKNOWN"
+#define TEST_COUNT 3
+
+// static const char TOKEN_TYPENAMES[13][8] = {
+//     "WTSPACE",
+//     "L_BRACK",
+//     "R_BRACK",
+//     "L_CURLY",
+//     "R_CURLY",
+//     "STRBODY",
+//     "COLON_P",
+//     "INT_LTL",
+//     "FLT_LTL",
+//     "NLL_LTL",
+//     "COMMA_P",
+//     "EOF_TOK",
+//     "UNKNOWN"
+// };
+
+static const char TEST_FILES[TEST_COUNT][17] = {
+    "tests/test1.json",
+    "tests/test2.json",
+    "tests/test3.json"
 };
 
-/// Debug Helpers
+// void Print_Token(size_t t_num, const Token *t)
+// {
+//     if (t != NULL)
+//         printf("Token %zu: type=%s, begin=%zu, span=%zu\n", t_num, TOKEN_TYPENAMES[t->type], t->begin, t->span);
+//     else
+//         printf("NULL\n");
+// }
 
-void Print_Token(size_t t_num, const Token *t)
+void Do_Test1(const JsonThing *json_ds)
 {
-    if (t != NULL)
-        printf("Token %zu: type=%s, begin=%zu, span=%zu\n", t_num, TOKEN_TYPENAMES[t->type], t->begin, t->span);
-    else
-        printf("NULL\n");
+    DataType type = UNSUPPORTED;
+
+    Object *obj = (Object*)json_ds->root->data.chunk;
+    Array *clubs = (Array*)Property_AsChunk(Object_GetItem(obj, "clubs"), &type);
+    const ArrayItem *item1 = Array_Get(clubs, 0);
+
+    printf("type %i: json_ds[\"clubs\"][0] = \"%s\"\n", type, item1->data.str);
+}
+
+void Do_Test2(const JsonThing *json_ds)
+{
+    Array *arr = (Array*)json_ds->root->data.chunk;
+
+    printf("json_ds[0] = %i\n", Array_Get(arr, 0)->data.i);
+}
+
+void Do_Test3(const JsonThing *json_ds)
+{
+    Array *arr = (Array*)json_ds->root->data.chunk;
+    Object *obj1 = (Object*)Array_Get(arr, 1)->data.chunk;
+    const Property *coord_x = (Property*)Object_GetItem(obj1, "x");
+
+    printf("json_ds[1][\"x\"] = %i\n", coord_x->data.i);
 }
 
 int main(int argc, char *argv[])
 {
     if (argc != 2)
     {
-        printf("usage: ./myjson <file name>\n");
+        printf("usage: ./myjson <test number>\n");
         return 1;
     }
 
-    // try to create lexer successfully:
-    Lexer *lexer_ref = Lexer_Create(argv[1]);
+    int test_index = atoi(argv[1]) - 1;
+
+    if (test_index < 0 || test_index >= TEST_COUNT)
+    {
+        printf("Invalid test number.\n");
+        return 1;
+    }
+
+    Lexer *lexer_ref = Lexer_Create(TEST_FILES[test_index]);
 
     if (!lexer_ref)
     {
@@ -52,69 +90,68 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    // test Lexer!
     TokenVec *tokens = Lexer_Lex_All(lexer_ref);
-
-    // // show token data:
-    // for (size_t i = 0; i < tokens->capacity; i++)
-    //     Print_Token(i, TokenVec_At(tokens, i));
-
-    // test Parser!
-    DataType target_type = UNSUPPORTED;
     char *old_buf_ref = Lexer_CleanUp(lexer_ref);
+
     Parser *parser_ref = Parser_Create(old_buf_ref, tokens);
 
-    puts("Testing parser...");
-    JsonThing *json_ds = Parser_Start_Parse(parser_ref); 
+    JsonThing *json_result = Parser_Start_Parse(parser_ref); 
 
     printf("parser exit code (should be 0): %i\n", Parser_Get_ErrCode(parser_ref));
     Parser_Reset(parser_ref);
 
     puts("Testing object property:");
-    if (json_ds != NULL)
+    if (json_result != NULL)
     {
-        if (strcmp(argv[1], "tests/test1.json") == 0)
+        switch (test_index)
         {
-            Object *obj = (Object*)json_ds->root->data.chunk;
-            printf("root obj: %p\n", obj);
-
-            Array *clubs = (Array*)Property_AsChunk(Object_GetItem(obj, "clubs"), &target_type);
-            printf("clubs: %p, type: %i\n", clubs, target_type);
-
-            const ArrayItem *item1 = Array_Get(clubs, 0);
-            puts("fetch &clubs[0]");
-
-            printf("json_ds[\"clubs\"][0] = \"%s\"\n", item1->data.str);
-        }
-        else if (strcmp(argv[1], "tests/test2.json") == 0)
-        {
-            Array *arr = (Array*)json_ds->root->data.chunk;
-            printf("json_ds[0] = %i\n", Array_Get(arr, 0)->data.i);
+        case 0:
+            Do_Test1(json_result);
+            break;
+        case 1:
+            Do_Test2(json_result);
+            break;
+        case 2:
+            Do_Test3(json_result);
+            break;
+        default:
+            break;
         }
     }
 
-    // free all dynamic memory:
-    free(old_buf_ref);
-    old_buf_ref = NULL;
-    puts("Freed src.");
+    if (old_buf_ref != NULL)
+    {
+        free(old_buf_ref);
+        old_buf_ref = NULL;
+    }
 
-    TokenVec_Destroy(tokens);
-    free(tokens);
-    tokens = NULL;
-    puts("Freed tokens.");
+    if (tokens != NULL)
+    {
+        TokenVec_Destroy(tokens);
+        free(tokens);
+        tokens = NULL;
+    }
 
-    free(lexer_ref);
-    lexer_ref = NULL;
-    puts("Freed Lexer.");
+    if (lexer_ref != NULL)
+    {
+        free(lexer_ref);
+        lexer_ref = NULL;
+    }
 
-    free(parser_ref);
-    parser_ref = NULL;
-    puts("Freed Parser.");
+    if (parser_ref != NULL)
+    {
+        free(parser_ref);
+        parser_ref = NULL;
+    }
 
-    JsonThing_Destroy(json_ds);
-    free(json_ds);
-    json_ds = NULL;
-    puts("Freed json thing.");
+    if (json_result != NULL)
+    {
+        JsonThing_Destroy(json_result);
+        free(json_result);
+        json_result = NULL;
+    }
+
+    puts("Cleanup OK");
 
     return 0;
 }
