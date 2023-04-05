@@ -15,7 +15,6 @@ char *read_file(const char *file_path, size_t *external_len)
     FILE *fs = fopen(file_path, "r");
     char *buf = NULL;
     size_t buf_size = 0;
-    size_t buf_pos = 0;
 
     if (!fs)
         goto err_bail; // error case 1: no file
