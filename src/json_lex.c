@@ -9,19 +9,16 @@
 
 int is_wspace(char c) { return c == ' ' || c == '\t' || c == '\n' || c =='\r'; }
 int is_digit(char c) { return c >= '0' && c <= '9'; }
-int match_punct(char c, char ch) { return c == ch; }
 
 char *read_file(const char *file_path, size_t *external_len)
 {
     FILE *fs = fopen(file_path, "r");
     char *buf = NULL;
     size_t buf_size = 0;
-    size_t buf_pos = 0;
 
     if (!fs)
         goto err_bail; // error case 1: no file
 
-    // get file length
     fseek(fs, 0, SEEK_END);
     buf_size = ftell(fs) + 1; // +1 for nul terminator
     fseek(fs, 0, SEEK_SET);
@@ -34,16 +31,12 @@ char *read_file(const char *file_path, size_t *external_len)
     if (!buf)
         goto err_bail; // error case 3: no buffer
 
-    while (buf_pos < buf_size)
-    {
-        buf[buf_pos] = fgetc(fs);
-        buf_pos++;
-    }
+    fread(buf, sizeof(char), buf_size - 1, fs);
 
-    buf[buf_pos] = '\0';
+    buf[buf_size - 1] = '\0';
     *external_len = buf_size - 1;
 
-err_bail: // cleanup on bad or normal exit
+err_bail: // cleanup on any exit
     if (fs != NULL)
         fclose(fs);
     
@@ -62,19 +55,15 @@ Lexer *Lexer_Create(const char *file_name)
     result->doc_end = temp_doc_len;
     result->doc_pos = 0;
 
-    // hacky way to avoid extra allocs, but oh well!
-    result->special_null[0] = 'n';
-    result->special_null[1] = 'u';
-    result->special_null[2] = 'l';
-    result->special_null[3] = 'l';
-    result->special_null[4] = '\0';
+    strcpy(result->special_null, "null");
+    result->special_null[4] = '\0'; // put null terminator to avoid over-reading
 
     return result;
 }
 
 char *Lexer_CleanUp(Lexer *self)
 {
-    char *temp = self->doc_buf; // copy referencing addr. to avoid losing the buffer!
+    char *temp = self->doc_buf; // Get referencing addr. to avoid losing the buffer meant for stringifying tokens in the parser.
     self->doc_buf = NULL;
 
     self->doc_end = 0;
@@ -126,7 +115,7 @@ Token *Lexer_Lex_Str(Lexer *self)
     {
         c = self->doc_buf[self->doc_pos];
 
-        if (match_punct(c, '\"'))
+        if (c == '\"')
         {
             self->doc_pos++; // skip past end quote to avoid stalling lexer loop!
             break;
@@ -151,9 +140,9 @@ Token *Lexer_Lex_Num(Lexer *self)
     {
         c = self->doc_buf[self->doc_pos];
 
-        if (!is_digit(c) && !match_punct(c, '.'))
+        if (!is_digit(c) && c != '.')
             break;
-        else if (match_punct(c, '.'))
+        else if (c == '.')
             point_count++;
         else if (is_digit(c))
             digit_count++;
@@ -270,8 +259,7 @@ TokenVec *Lexer_Lex_All(Lexer *self)
             break;
         }
 
-        // append new token in order!
-        TokenVec_Set(result, result_idx, temp);
+        TokenVec_Set(result, result_idx, temp); // append a new token to a dynamic vector
 
         result_idx++;
     }

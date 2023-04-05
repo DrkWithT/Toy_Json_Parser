@@ -2,15 +2,16 @@
 #define JSON_LEX_H
 
 #include "json_token.h"
+#include <string.h>
 
 /// Limits:
+
 #define MAX_JSON_LEN 10000
 
 /// Helpers:
 
 int is_wspace(char c);
 int is_digit(char c);
-int match_punct(char c, char ch);
 
 /**
  * @brief Reads an entire file (json) into a dynamic char buffer. Returns NULL on failure. Either failed allocation or a size too large (over MAX_JSON_LEN) will cause failure.
