@@ -1,6 +1,6 @@
 /**
  * @file json_data.c
- * @author Derek Tan (DrkWithT at GitHub)
+ * @author (DrkWithT at GitHub)
  * @brief Implements basic data structures for JSON data representation.
  * @date 2023-03-24
  */

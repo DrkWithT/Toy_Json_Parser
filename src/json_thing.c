@@ -1,6 +1,6 @@
 /**
  * @file json_thing.c
- * @author Derek Tan (DrkWithT at GitHub)
+ * @author (DrkWithT at GitHub)
  * @brief Implements the main JSON data structure, which represents content.
  * @date 2023-03-25
  */

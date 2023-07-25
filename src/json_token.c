@@ -1,6 +1,6 @@
 /**
  * @file json_token.c
- * @author Derek Tan (DrkWithT at GitHub)
+ * @author (DrkWithT at GitHub)
  * @brief Implements Token and TokenVec.
  * @date 2023-03-26
  */

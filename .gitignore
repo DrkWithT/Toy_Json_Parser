@@ -1,6 +1,8 @@
 # gitignore
-# Derek Tan
 
 # Ignore binaries and their directory bin/:
 *.o
-bin
+bin/
+
+# Ignore replit caches:
+.ccls-cache

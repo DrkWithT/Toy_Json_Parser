@@ -1,6 +1,6 @@
 /**
  * @file myjson.c
- * @author Derek Tan (DrkWithT at GitHub)
+ * @author (DrkWithT at GitHub)
  * @brief Test driver code for my JSON parser.
  * @date 2023-03-25
  */
@@ -9,35 +9,11 @@
 
 #define TEST_COUNT 3
 
-// static const char TOKEN_TYPENAMES[13][8] = {
-//     "WTSPACE",
-//     "L_BRACK",
-//     "R_BRACK",
-//     "L_CURLY",
-//     "R_CURLY",
-//     "STRBODY",
-//     "COLON_P",
-//     "INT_LTL",
-//     "FLT_LTL",
-//     "NLL_LTL",
-//     "COMMA_P",
-//     "EOF_TOK",
-//     "UNKNOWN"
-// };
-
 static const char TEST_FILES[TEST_COUNT][17] = {
     "tests/test1.json",
     "tests/test2.json",
     "tests/test3.json"
 };
-
-// void Print_Token(size_t t_num, const Token *t)
-// {
-//     if (t != NULL)
-//         printf("Token %zu: type=%s, begin=%zu, span=%zu\n", t_num, TOKEN_TYPENAMES[t->type], t->begin, t->span);
-//     else
-//         printf("NULL\n");
-// }
 
 void Do_Test1(const JsonThing *json_ds)
 {

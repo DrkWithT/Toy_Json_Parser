@@ -1,5 +1,5 @@
 # Makefile for Toy Json Parser proj:
-# By: Derek Tan
+# By: DrkWithT at GitHub
 
 # Compiler:
 CC := gcc -std=c11

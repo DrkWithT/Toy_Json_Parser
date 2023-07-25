@@ -1,6 +1,6 @@
 /**
  * @file json_hasher.c
- * @author Derek Tan (you@domain.com)
+ * @author (DrkWithT at GitHub)
  * @brief Implements the JSON object key hashing function.
  * @date 2023-03-25
  */

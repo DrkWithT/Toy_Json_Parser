@@ -1,8 +1,8 @@
-# Toy JSON Parser
-## By: Derek Tan
+# Toy JSON Parser (Replit Port)
+## By: DrkWithT (GitHub)
 
 ### Summary:
-This repository contains code for a homemade recursive JSON parser in C. Because this is a toy parser, not all standard JSON features are meant to be supported. I do not intend this to be a production-ready, blazingly fast parser, but I made this for fun. Feel free to fork my work in progress project.
+This repository contains code for a homemade recursive JSON parser in plain old C. Because this is a toy parser, not all standard JSON features are meant to be supported. I do not intend this to be a production-ready, blazingly fast parser, but I made this for fun. Feel free to fork my work in progress project.
 
 ### Usage:
  - Build: `make all`
@@ -26,4 +26,3 @@ This repository contains code for a homemade recursive JSON parser in C. Because
  4. ~~Test run parse result and do structure function tests.~~
  5. ~~Refactor helper function for reading JSON file.~~
  6. Refactor `Parser_Parse_Obj(...)`, specifically the "expect" flags.
- 7. Add another test for `null` property values. 

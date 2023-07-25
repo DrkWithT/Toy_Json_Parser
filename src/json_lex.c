@@ -1,6 +1,6 @@
 /**
  * @file json_lex.c
- * @author Derek Tan (DrkWithT at Github)
+ * @author (DrkWithT at GitHub)
  * @brief Implements my JSON lexer.
  * @date 2023-03-26
  */
